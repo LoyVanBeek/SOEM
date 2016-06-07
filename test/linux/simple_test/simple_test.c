@@ -83,6 +83,9 @@ void simpletest(char *ifname)
          {
             printf("Operational state reached for all slaves.\n");
             inOP = TRUE;
+
+            ec_slave[0].outputs[0] = 0xFF;
+
                 /* cyclic loop */
             for(i = 1; i <= 10000; i++)
             {
@@ -96,6 +99,11 @@ void simpletest(char *ifname)
                         for(j = 0 ; j < oloop; j++)
                         {
                             printf(" %2.2x", *(ec_slave[0].outputs + j));
+                        }
+
+                        if((i % 16) == 0)
+                        {
+                            ec_slave[0].outputs[0] = ~ec_slave[0].outputs[0];
                         }
 
                         printf(" I:");
