@@ -86,6 +86,7 @@ void simpletest(char *ifname)
 
             ec_slave[0].outputs[0] = 0xFF;
 
+            ec_slave[1].outputs = 0;//[0]; // = 0xFF;
                 /* cyclic loop */
             for(i = 1; i <= 10000; i++)
             {
