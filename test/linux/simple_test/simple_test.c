@@ -86,7 +86,18 @@ void simpletest(char *ifname)
 
             ec_slave[0].outputs[0] = 0xFF;
 
-            ec_slave[1].outputs = 0;//[0]; // = 0xFF;
+            ec_slave[0].outputs[1] = 0b00000001; //0x01;
+            ec_slave[0].outputs[2] = 0b00000000;
+
+            uint16 *setpoint1 = &ec_slave[0].outputs[3];
+            ec_slave[0].outputs[5] = 0b00000001; //Last bit sets channel 2 enable
+            ec_slave[0].outputs[6] = 0x00;
+
+            uint16 *setpoint2 = &ec_slave[0].outputs[7];
+            *setpoint1 = 5000;
+            *setpoint2 = -5000;
+            printf("ec_slave[0].outputs: %d \n\r", (int)ec_slave[0].outputs);
+
                 /* cyclic loop */
             for(i = 1; i <= 10000; i++)
             {
