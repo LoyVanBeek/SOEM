@@ -25,8 +25,8 @@ boolean needlf;
 volatile int wkc;
 boolean inOP;
 uint8 currentgroup = 0;
-uint16 speed1 = 5000;
-uint16 speed2 = 5000;
+uint16 speed1 = 0;
+uint16 speed2 = 0;
 
 void simpletest(char *ifname)
 {
@@ -102,7 +102,7 @@ void simpletest(char *ifname)
             printf("ec_slave[0].outputs: %d \n\r", (int)ec_slave[0].outputs);
 
                 /* cyclic loop */
-            for(i = 1; i <= 10000; i++)
+            for(;;)
             {
                 *setpoint1 = speed1;
                 *setpoint2 = -speed2;
@@ -254,7 +254,7 @@ void *read_stdin(void *prt)
         scanf("%d %d", &i1, &i2);
         speed1 = (uint16)i1;
         speed2 = (uint16)i2;
-//        printf( "\n You entered: %d %d \r", speed1, speed2);
+        //printf( "\n You entered: %d %d \r", speed1, speed2);
     }
 }
 
