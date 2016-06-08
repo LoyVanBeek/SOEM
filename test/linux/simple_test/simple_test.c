@@ -19,11 +19,14 @@
 
 char IOmap[4096];
 OSAL_THREAD_HANDLE thread1;
+pthread_t read_thread;
 int expectedWKC;
 boolean needlf;
 volatile int wkc;
 boolean inOP;
 uint8 currentgroup = 0;
+uint16 speed1 = 5000;
+uint16 speed2 = 5000;
 
 void simpletest(char *ifname)
 {
@@ -94,23 +97,26 @@ void simpletest(char *ifname)
             ec_slave[0].outputs[6] = 0x00;
 
             uint16 *setpoint2 = &ec_slave[0].outputs[7];
-            *setpoint1 = 5000;
-            *setpoint2 = -5000;
+            *setpoint1 = speed1;
+            *setpoint2 = -speed2;
             printf("ec_slave[0].outputs: %d \n\r", (int)ec_slave[0].outputs);
 
                 /* cyclic loop */
             for(i = 1; i <= 10000; i++)
             {
+                *setpoint1 = speed1;
+                *setpoint2 = -speed2;
+               printf("Speed1 & Speed2: %d %d                           \r", speed1, speed2);
                ec_send_processdata();
                wkc = ec_receive_processdata(EC_TIMEOUTRET);
 
                     if(wkc >= expectedWKC)
                     {
-                        printf("Processdata cycle %4d, WKC %d , O:", i, wkc);
+//                        printf("Processdata cycle %4d, WKC %d , O:", i, wkc);
 
                         for(j = 0 ; j < oloop; j++)
                         {
-                            printf(" %2.2x", *(ec_slave[0].outputs + j));
+//                            printf(" %2.2x", *(ec_slave[0].outputs + j));
                         }
 
                         if((i % 16) == 0)
@@ -121,9 +127,9 @@ void simpletest(char *ifname)
                         printf(" I:");
                         for(j = 0 ; j < iloop; j++)
                         {
-                            printf(" %2.2x", *(ec_slave[0].inputs + j));
+//                            printf(" %2.2x", *(ec_slave[0].inputs + j));
                         }
-                        printf(" T:%"PRId64"\r",ec_DCtime);
+//                        printf(" T:%"PRId64"\r",ec_DCtime);
                         needlf = TRUE;
                     }
                     osal_usleep(5000);
@@ -239,6 +245,19 @@ OSAL_THREAD_FUNC ecatcheck( void *ptr )
     }
 }
 
+void *read_stdin(void *prt)
+{
+    int i1 = 0;
+    int i2 = 0;
+    while(1)
+    {
+        scanf("%d %d", &i1, &i2);
+        speed1 = (uint16)i1;
+        speed2 = (uint16)i2;
+//        printf( "\n You entered: %d %d \r", speed1, speed2);
+    }
+}
+
 int main(int argc, char *argv[])
 {
    printf("SOEM (Simple Open EtherCAT Master)\nSimple test\n");
@@ -249,6 +268,7 @@ int main(int argc, char *argv[])
 //      pthread_create( &thread1, NULL, (void *) &ecatcheck, (void*) &ctime);
       osal_thread_create(&thread1, 128000, &ecatcheck, (void*) &ctime);
       /* start cyclic part */
+      pthread_create(&read_thread, NULL, read_stdin, NULL);
       simpletest(argv[1]);
    }
    else
