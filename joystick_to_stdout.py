@@ -11,7 +11,7 @@ wheel_separation_ = 0.20
 wheel_radius_multiplier_ = 1
 wheel_radius_ = 0.03
 
-hardware_scaling_factor = 50
+hardware_scaling_factor = 75
 
 def write(twist):
     ws = wheel_separation_multiplier_ * wheel_separation_
@@ -23,7 +23,7 @@ def write(twist):
     vel_left *= hardware_scaling_factor
     vel_right *= hardware_scaling_factor
 
-    sys.stdout.write("{0} {1}\n".format(vel_left, vel_right))
+    sys.stdout.write("{0} {1}\n".format(int(vel_left), int(vel_right)))
     # sys.stdout.flush()
 
 rospy.init_node("topic_to_pipe")
