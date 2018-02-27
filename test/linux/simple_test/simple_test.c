@@ -109,9 +109,10 @@ void simpletest(char *ifname)
                wkc = ec_receive_processdata(EC_TIMEOUTRET);
 
                 counter++;
-                printf("Counter %5d\n", counter);
+                printf("Counter %5d\r", counter);
                 if(counter > 0x7FFF)
                 {
+                    printf("\nCounter Overflow: from 10V to 0V\n");
                     counter = 0;
                 }
 
@@ -120,7 +121,7 @@ void simpletest(char *ifname)
                 ec_slave[0].outputs[2] = counter & 0xFF;
                 ec_slave[0].outputs[3] = (counter >> 8) & 0xFF;
 
-                osal_usleep(500);
+                osal_usleep(100);
 
                 }
                 inOP = FALSE;
