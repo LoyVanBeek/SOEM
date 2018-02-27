@@ -173,6 +173,8 @@ OSAL_THREAD_FUNC ecatcheck( void *ptr )
 {
     int slave;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
     while(1)
     {
         if( inOP && ((wkc < expectedWKC) || ec_group[currentgroup].docheckstate))
@@ -243,6 +245,7 @@ OSAL_THREAD_FUNC ecatcheck( void *ptr )
         }
         osal_usleep(10000);
     }
+#pragma clang diagnostic pop
 }
 
 void *read_stdin(void *prt)
