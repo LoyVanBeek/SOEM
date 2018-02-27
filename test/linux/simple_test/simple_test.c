@@ -115,12 +115,12 @@ void simpletest(char *ifname)
                     counter = 0;
                 }
 
-                ec_slave[0].outputs[0] = (counter >> 8) & 0xFF;
-                ec_slave[0].outputs[1] = counter & 0xFF;
-                ec_slave[0].outputs[2] = (counter >> 8) & 0xFF;
-                ec_slave[0].outputs[3] = counter & 0xFF;
+                ec_slave[0].outputs[0] = counter & 0xFF;
+                ec_slave[0].outputs[1] = (counter >> 8) & 0xFF;
+                ec_slave[0].outputs[2] = counter & 0xFF;
+                ec_slave[0].outputs[3] = (counter >> 8) & 0xFF;
 
-                osal_usleep(5000);
+                osal_usleep(500);
 
                 }
                 inOP = FALSE;
