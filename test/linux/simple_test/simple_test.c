@@ -94,17 +94,9 @@ void simpletest(char *ifname)
             ec_slave[0].outputs[2] = 0x00;
             ec_slave[0].outputs[3] = 0x00;
 
-//            uint16 *setpoint2 = &ec_slave[0].outputs[7];
-//            *setpoint1 = speed1;
-//            *setpoint2 = -speed2;
-//            printf("ec_slave[0].outputs: %d \n\r", (int)ec_slave[0].outputs);
-
                 /* cyclic loop */
             for(;;)
             {
-//                *setpoint1 = speed1;
-//                *setpoint2 = -speed2;
-//               printf("Speed1 & Speed2: %d %d                           \r", speed1, speed2);
                ec_send_processdata();
                wkc = ec_receive_processdata(EC_TIMEOUTRET);
 
@@ -237,19 +229,6 @@ OSAL_THREAD_FUNC ecatcheck( void *ptr )
 #pragma clang diagnostic pop
 }
 
-void *read_stdin(void *prt)
-{
-    int i1 = 0;
-    int i2 = 0;
-    while(1)
-    {
-        scanf("%d %d", &i1, &i2);
-        speed1 = (uint16)i1;
-        speed2 = (uint16)i2;
-        //printf( "\n You entered: %d %d \r", speed1, speed2);
-    }
-}
-
 int main(int argc, char *argv[])
 {
    printf("SOEM (Simple Open EtherCAT Master)\nSimple test\n");
@@ -259,8 +238,6 @@ int main(int argc, char *argv[])
       /* create thread to handle slave error handling in OP */
 //      pthread_create( &thread1, NULL, (void *) &ecatcheck, (void*) &ctime);
       osal_thread_create(&thread1, 128000, &ecatcheck, (void*) &ctime);
-      /* start cyclic part */
-      pthread_create(&read_thread, NULL, read_stdin, NULL);
       simpletest(argv[1]);
    }
    else
