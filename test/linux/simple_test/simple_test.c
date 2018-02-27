@@ -34,6 +34,8 @@ void simpletest(char *ifname)
     needlf = FALSE;
     inOP = FALSE;
 
+    uint16 counter = 0x0000;
+
    printf("Starting simple test\n");
 
    /* initialise SOEM, bind socket to ifname */
@@ -87,52 +89,38 @@ void simpletest(char *ifname)
             printf("Operational state reached for all slaves.\n");
             inOP = TRUE;
 
-            ec_slave[0].outputs[0] = 0xFF;
+            ec_slave[0].outputs[0] = 0x00;
+            ec_slave[0].outputs[1] = 0x00;
+            ec_slave[0].outputs[2] = 0x00;
+            ec_slave[0].outputs[3] = 0x00;
 
-            ec_slave[0].outputs[1] = 0b00000001; //0x01;
-            ec_slave[0].outputs[2] = 0b00000000;
-
-            uint16 *setpoint1 = &ec_slave[0].outputs[3];
-            ec_slave[0].outputs[5] = 0b00000001; //Last bit sets channel 2 enable
-            ec_slave[0].outputs[6] = 0x00;
-
-            uint16 *setpoint2 = &ec_slave[0].outputs[7];
-            *setpoint1 = speed1;
-            *setpoint2 = -speed2;
-            printf("ec_slave[0].outputs: %d \n\r", (int)ec_slave[0].outputs);
+//            uint16 *setpoint2 = &ec_slave[0].outputs[7];
+//            *setpoint1 = speed1;
+//            *setpoint2 = -speed2;
+//            printf("ec_slave[0].outputs: %d \n\r", (int)ec_slave[0].outputs);
 
                 /* cyclic loop */
             for(;;)
             {
-                *setpoint1 = speed1;
-                *setpoint2 = -speed2;
-               printf("Speed1 & Speed2: %d %d                           \r", speed1, speed2);
+//                *setpoint1 = speed1;
+//                *setpoint2 = -speed2;
+//               printf("Speed1 & Speed2: %d %d                           \r", speed1, speed2);
                ec_send_processdata();
                wkc = ec_receive_processdata(EC_TIMEOUTRET);
 
-                    if(wkc >= expectedWKC)
-                    {
-//                        printf("Processdata cycle %4d, WKC %d , O:", i, wkc);
+                counter++;
+                printf("Counter %5d\n", counter);
+                if(counter > 0xFFFF)
+                {
+                    counter = 0;
+                }
 
-                        for(j = 0 ; j < oloop; j++)
-                        {
-//                            printf(" %2.2x", *(ec_slave[0].outputs + j));
-                        }
+                ec_slave[0].outputs[0] = (counter >> 8) & 0xFF;
+                ec_slave[0].outputs[1] = counter & 0xFF;
+                ec_slave[0].outputs[2] = (counter >> 8) & 0xFF;
+                ec_slave[0].outputs[3] = counter & 0xFF;
 
-                        if((i % 16) == 0)
-                        {
-                            ec_slave[0].outputs[0] = ~ec_slave[0].outputs[0];
-                        }
-
-                        printf(" I:");
-                        for(j = 0 ; j < iloop; j++)
-                        {
-//                            printf(" %2.2x", *(ec_slave[0].inputs + j));
-                        }
-//                        printf(" T:%"PRId64"\r",ec_DCtime);
-                        needlf = TRUE;
-                    }
-                    osal_usleep(5000);
+                osal_usleep(5000);
 
                 }
                 inOP = FALSE;
