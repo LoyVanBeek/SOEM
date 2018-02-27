@@ -34,7 +34,7 @@ void simpletest(char *ifname)
     needlf = FALSE;
     inOP = FALSE;
 
-    uint16 counter = 0x0000;
+    uint16 counter = 0;
 
    printf("Starting simple test\n");
 
@@ -110,7 +110,7 @@ void simpletest(char *ifname)
 
                 counter++;
                 printf("Counter %5d\n", counter);
-                if(counter > 0xFFFF)
+                if(counter > 0x7FFF)
                 {
                     counter = 0;
                 }
