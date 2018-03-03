@@ -28,6 +28,22 @@ uint8 currentgroup = 0;
 uint16 speed1 = 0;
 uint16 speed2 = 0;
 
+typedef struct PACKED
+{
+    uint8 control;
+    uint16 value;
+} EL5101_output;
+
+typedef struct PACKED
+{
+    uint8 status;
+    uint16 value;
+    uint16 latch;
+    uint32 frequency;
+    uint16 period;
+    uint16 window;
+} EL5101_input;
+
 void simpletest(char *ifname)
 {
     int i, j, oloop, iloop, chk;
@@ -35,6 +51,7 @@ void simpletest(char *ifname)
     inOP = FALSE;
 
     uint16 counter = 0;
+    EL5101_input *encoder_state;
 
    printf("Starting simple test\n");
 
@@ -112,6 +129,10 @@ void simpletest(char *ifname)
                 ec_slave[0].outputs[1] = (counter >> 8) & 0xFF;
                 ec_slave[0].outputs[2] = counter & 0xFF;
                 ec_slave[0].outputs[3] = (counter >> 8) & 0xFF;
+
+
+                encoder_state = (EL5101_input*) (ec_slave[4].inputs);
+                printf("encoder_state:value %5d\r", encoder_state->value);
 
                 osal_usleep(100);
 
