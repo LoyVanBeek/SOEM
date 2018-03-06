@@ -119,9 +119,9 @@ void simpletest(char *ifname)
 
                 counter++;
                 printf("Counter %5d\r", counter);
-                if(counter > 0x7FFF)
+                if(counter > 0x2FFF)
                 {
-                    printf("\nCounter Overflow: from 10V to 0V\n");
+                    printf("\nCounter Overflow: from 3.75V to 0V\n");
                     counter = 0;
                 }
 
@@ -131,8 +131,8 @@ void simpletest(char *ifname)
                 ec_slave[0].outputs[3] = (counter >> 8) & 0xFF;
 
 
-                encoder_state = (EL5101_input*) (ec_slave[4].inputs);
-                printf("encoder_state:value %5d\r", encoder_state->value);
+//                encoder_state = (EL5101_input*) (ec_slave[4].inputs);
+//                printf("encoder_state:value %5d\r", encoder_state->value);
 
                 osal_usleep(100);
 
