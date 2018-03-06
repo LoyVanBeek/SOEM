@@ -17,6 +17,12 @@
 
 #define EC_TIMEOUTMON 500
 
+#define MINIMUM -32768  // -10V
+#define MAXIMUM 32768  // +10V
+
+#define MIN3V -12287  // -3.75V
+#define PLUS3V 12287  // +3.75V
+
 char IOmap[4096];
 OSAL_THREAD_HANDLE thread1;
 pthread_t read_thread;
@@ -50,7 +56,8 @@ void simpletest(char *ifname)
     needlf = FALSE;
     inOP = FALSE;
 
-    uint16 counter = 0;
+    int16 counter = 0;
+    float bitsPerVolt = 32768/10;
     EL5101_input *encoder_state;
 
    printf("Starting simple test\n");
@@ -119,10 +126,10 @@ void simpletest(char *ifname)
 
                 counter++;
                 printf("Counter %5d\r", counter);
-                if(counter > 0x2FFF)
+                if(counter > PLUS3V)
                 {
-                    printf("\nCounter Overflow: from 3.75V to 0V\n");
-                    counter = 0;
+                    printf("\nCounter Overflow: from %5d to %5d\n", PLUS3V, MIN3V);
+                    counter = MIN3V;
                 }
 
                 ec_slave[0].outputs[0] = counter & 0xFF;
@@ -134,7 +141,7 @@ void simpletest(char *ifname)
 //                encoder_state = (EL5101_input*) (ec_slave[4].inputs);
 //                printf("encoder_state:value %5d\r", encoder_state->value);
 
-                osal_usleep(100);
+                osal_usleep(200);
 
                 }
                 inOP = FALSE;
