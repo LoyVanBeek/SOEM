@@ -57,7 +57,8 @@ void simpletest(char *ifname)
     inOP = FALSE;
 
     int16 counter = 0;
-    float bitsPerVolt = 32768/10;
+    int8 direction = 1;
+
     EL5101_input *encoder_state;
 
    printf("Starting simple test\n");
@@ -124,12 +125,17 @@ void simpletest(char *ifname)
                ec_send_processdata();
                wkc = ec_receive_processdata(EC_TIMEOUTRET);
 
-                counter++;
+                counter = counter + direction;
                 printf("Counter %5d\r", counter);
                 if(counter > PLUS3V)
                 {
-                    printf("\nCounter Overflow: from %5d to %5d\n", PLUS3V, MIN3V);
-                    counter = MIN3V;
+                    printf("\nCounter Overflow: flip direction\n");
+                    direction = -1;
+                }
+                else if(counter < MIN3V)
+                {
+                    printf("\nCounter Overflow: flip direction\n");
+                    direction = 1;
                 }
 
                 ec_slave[0].outputs[0] = counter & 0xFF;
